@@ -2,6 +2,7 @@
 - 👀 I’m interested in maths, fluid dynamics, statistical modelling, machine learning and trading
 
 https://www.linkedin.com/in/rbenstead/
+
 https://www.youtube.com/user/rbenstead/videos
 
 <!---
