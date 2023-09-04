@@ -1,0 +1,34 @@
+#!/bin/bash
+MODE=$(basename $0)
+case "$MODE" in
+    "gptc")
+        PROMPT="Solve the following C++ problem. Prefer modern C++ and features from newer standards as appropriate. Use Lambdas, algorithms and IIFE as needed. Keep code compact and very efficient. Use east const and make all variables const or constexpr where possible. Just include the code and inline comments: "
+        ;;
+    "gptp")
+        PROMPT="Solve the following Python3 problem. Prefer modern language features. Keep code compact and efficient, leveraging vectorization where possible. Just include the code and inline comments: "
+        ;;
+    *)
+        PROMPT="Answer the following, including important details but staying concise: "
+        ;;
+esac
+
+if [ -t 0 ]; then
+    INPUT=$@
+else
+    INPUT=$(cat)
+fi
+
+TOKEN="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"
+
+CURL=`cat <<EOS
+ curl --silent --location --request POST "https://api.openai.com/v1/chat/completions" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer ${TOKEN}" \
+  -d '{
+    "model": "gpt-3.5-turbo",
+    "messages": [{"role": "user", "content": "${PROMPT}${INPUT}"}]
+  }' | jq -r '.choices[]'.message.content
+EOS`
+
+RES=$(eval ${CURL})
+echo -e "${RES}"
