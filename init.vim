@@ -3,8 +3,7 @@ if &term =~ "xterm" || &term =~ "256" || $DISPLAY != "" || $HAS_256_COLORS == "y
     set t_Co=256
 endif
 set t_Co=256
-
-colorscheme desert
+set termguicolors
 
 silent! call plug#begin()
 Plug 'neovim/pynvim'
@@ -25,9 +24,14 @@ Plug 'powerline/powerline'
 Plug 'qpkorr/vim-bufkill'
 Plug 'jamessan/vim-gnupg'
 Plug 'jpalardy/vim-slime'
+Plug 'noah/vim256-color'
 Plug 'vim-syntastic/syntastic'
+" Plug 'vim-scripts/Conque-GDB'
 Plug 'stefandtw/quickfix-reflector.vim'
+" Plug 'inkarkat/vim-mark'
 call plug#end()
+
+" colorscheme 256_adaryn
 
 augroup ScrollbarInit
   autocmd!
@@ -38,6 +42,7 @@ augroup end
 
 let g:ycm_autoclose_preview_window_after_completion = 1
 let g:ycm_show_diagnostics_ui = 0
+let g:ycm_auto_hover = 'CursorHold'
 
 set hidden " allow hidden buffers (don't force write when changing)
 set number
@@ -59,14 +64,16 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
+let g:syntastic_cpp_compiler_options = "-std=c++20 -Wall -Wextra"
 " let g:syntastic_cpp_remove_include_errors = 0
 " let g:syntastic_cpp_checkers = []
 " let g:syntastic_c_checkers = []
 nnoremap <F8> <Esc>:SyntasticCheck<CR>
 " to configure flake8 use ~/tox.ini
-" let g:syntastic_cpp_include_dirs = ['']
+let g:syntastic_cpp_include_dirs = ['/home/richard.benstead/miniconda/envs/roq-build/include']
 
 
+set diffopt=vertical "fugitive
 autocmd TabEnter * call airline#highlighter#highlight(['normal', &modified ? 'modified' : ''])
 
 set nocompatible
@@ -94,19 +101,20 @@ nnoremap <F4> <Esc>:BD<CR>
 nnoremap <s-F4> <Esc>:quit<CR>
 nnoremap <F16> <Esc>:quit<CR>
 
-set makeprg=make
-nnoremap <expr> <F5> '<Esc>:Make -C build<CR>'
+nnoremap <expr> <F5> '<Esc>:make -C build<CR>'
+
 nnoremap <s-F1> <Esc>:cprev<CR>
 nnoremap <F13> <Esc>:cprev<CR>
 nnoremap <s-F2> <Esc>:cnext<CR>
 nnoremap <F14> <Esc>:cnext<CR>
 
 
+" nnoremap <expr> <F7> ':ConqueGdb --cd=' . expand($ROQ_DEBUG_PATH) . ' --args ' . expand($ROQ_BUILD) . '/sfe/bin/new-edge-roq-sim ' . expand($config_file) . '<CR>'
+
 nnoremap gg <Esc>:YcmCompleter GoTo<CR>
 nnoremap gd <Esc>:YcmCompleter GoToDeclaration<CR>
 nnoremap gf <Esc>:YcmCompleter GoToDefinition<CR>
 nnoremap gt <Esc>:YcmCompleter GetType<CR>
-
 
 " prevent accidentally closing the last window
 cabbrev q <c-r>=(getcmdtype()==':' && getcmdpos()==1 ? 'echo' : 'q')<CR>
@@ -122,7 +130,6 @@ endif
 
 tnoremap <Esc> <C-\><C-n>
 tnoremap <C-v><Esc> <Esc>
-
 
 let g:slime_python_ipython = 1
 let g:slime_target = "neovim"
@@ -151,11 +158,11 @@ let cmdline_map_send_block     = '<LocalLeader>b'
 let cmdline_map_quit           = '<LocalLeader>q'
 
 " vimcmdline options
-let cmdline_vsplit      = 0      " Split the window vertically
+let cmdline_vsplit      = 1      " Split the window vertically
 let cmdline_esc_term    = 1      " Remap <Esc> to :stopinsert in Neovim's terminal
 let cmdline_in_buffer   = 1      " Start the interpreter in a Neovim's terminal
 let cmdline_term_height = 15     " Initial height of interpreter window or pane
-let cmdline_term_width  = 80     " Initial width of interpreter window or pane
+let cmdline_term_width  = 120     " Initial width of interpreter window or pane
 let cmdline_tmp_dir     = '/tmp' " Temporary directory to save files
 let cmdline_outhl       = 1      " Syntax highlight the output
 let cmdline_auto_scroll = 1      " Keep the cursor at the end of terminal (nvim)
@@ -176,8 +183,26 @@ hi TabLine      ctermfg=Black  ctermbg=Green     cterm=NONE
 hi TabLineFill  ctermfg=Black  ctermbg=Red     cterm=NONE
 hi TabLineSel   ctermfg=White  ctermbg=DarkRed  cterm=NONE
 hi IncSearch    cterm=NONE ctermfg=yellow ctermbg=darkgreen
+" hi Search       cterm=NONE ctermfg=white ctermbg=darkgrey
 hi Search       ctermbg=DarkYellow ctermfg=White
 
 hi CursorLine   cterm=NONE ctermbg=52 ctermfg=NONE guibg=NONE guifg=NONE  
 set cursorline
+
+function! SendCurrentLineToGPT(gpt)
+    let current_line = getline('.')
+    let output = system('echo ' . shellescape(current_line . 'dont include any commentary') . ' | ' . a:gpt)
+    let output = substitute(output, '\\n', '\n', 'g')
+    let output = substitute(output, '\\r', '', 'g')
+    let output = substitute(output, '\n$n', '', 'g')
+    let output = substitute(output, '\`\`\`', '', 'g')
+    call append(line('.'), split(output, '\n', 1))
+endfunction
+
+nnoremap <A-g> <Esc>:call SendCurrentLineToGPT("gpt")<CR>
+inoremap <A-g> <Esc>:call SendCurrentLineToGPT("gpt")<CR>
+nnoremap <A-c> <Esc>:call SendCurrentLineToGPT("gptc")<CR>
+nnoremap <A-c> <Esc>:call SendCurrentLineToGPT("gptc")<CR>
+inoremap <A-p> <Esc>:call SendCurrentLineToGPT("gptp")<CR>
+inoremap <A-p> <Esc>:call SendCurrentLineToGPT("gptp")<CR>
 
