@@ -78,6 +78,3 @@ meter="${meter}\033[0m"
 
 # Display the meter
 echo -e "$meter"
-
-# Optionally display the exact value
-echo "Value: $value" >&2

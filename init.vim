@@ -28,11 +28,15 @@ Plug 'noah/vim256-color'
 Plug 'vim-syntastic/syntastic'
 " Plug 'vim-scripts/Conque-GDB'
 Plug 'stefandtw/quickfix-reflector.vim'
+Plug 'puremourning/vimspector'
+" Plug 'inkarkat/vim-ingo-library'
 " Plug 'inkarkat/vim-mark'
+" Plug 'chentoast/marks.nvim'
 call plug#end()
 
 " colorscheme 256_adaryn
 
+set colorcolumn=120
 augroup ScrollbarInit
   autocmd!
   autocmd CursorMoved,VimResized,QuitPre * silent! lua require('scrollbar').show()
@@ -52,7 +56,7 @@ set relativenumber
 set laststatus=2
 " Enable the list of buffers
 let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#fnamemod = ':t' " Show just the filename
+" let g:airline#extensions#tabline#fnamemod = ':t' " Show just the filename
 let g:airline_powerline_fonts = 1
 let g:airline_theme='wombat'
 
@@ -72,6 +76,9 @@ nnoremap <F8> <Esc>:SyntasticCheck<CR>
 " to configure flake8 use ~/tox.ini
 let g:syntastic_cpp_include_dirs = ['/home/richard.benstead/miniconda/envs/roq-build/include']
 
+" disable netrw file browser
+let g:loaded_netrwPlugin = 1
+let g:loaded_netrw = 1
 
 set diffopt=vertical "fugitive
 autocmd TabEnter * call airline#highlighter#highlight(['normal', &modified ? 'modified' : ''])
@@ -80,6 +87,8 @@ set nocompatible
 syntax enable
 filetype plugin on
 filetype indent on
+
+set mouse=
 
 syntax on
 set mps+=<:>
@@ -131,8 +140,11 @@ endif
 tnoremap <Esc> <C-\><C-n>
 tnoremap <C-v><Esc> <Esc>
 
-let g:slime_python_ipython = 1
-let g:slime_target = "neovim"
+let g:slime_target = "tmux"
+let g:slime_bracketed_paste = 1
+let g:slime_python_ipython = 0
+let g:slime_preserve_curpos = 1
+let g:slime_paste_file = tempname()
 
 fun! StartREPL()
   execute 'terminal'
@@ -144,7 +156,9 @@ endfun
 
 nmap <F9> <Plug>SlimeLineSend
 nmap <S-F9> <Plug>SlimeSend
-nmap <F10> <Plug>SlimeParagraphSend
+nmap <a-F9> <Plug>SlimeParagraphSend
+xmap <c-c><c-c> <Plug>SlimeRegionSend
+
 set splitbelow
 nmap <F12> tt :split <bar>:call StartREPL()<CR>
 
@@ -206,3 +220,36 @@ nnoremap <A-c> <Esc>:call SendCurrentLineToGPT("gptc")<CR>
 inoremap <A-p> <Esc>:call SendCurrentLineToGPT("gptp")<CR>
 inoremap <A-p> <Esc>:call SendCurrentLineToGPT("gptp")<CR>
 
+nnoremap <C-c> <Esc>:w !xclip -sel c<CR>
+
+nnoremap <A-b> <Esc>:!black -l120 %<CR>
+
+
+nnoremap <A-F1> <Esc>:call vimspector#Launch()<CR>
+nnoremap <A-F2> :call vimspector#Reset()<CR>
+nnoremap <A-F10> :call vimspector#Continue()<CR>
+
+nnoremap <A-F3> :call vimspector#ToggleBreakpoint()<CR>
+nnoremap <A-B> :call vimspector#ClearBreakpoints()<CR>
+
+nmap <Leader>dk <Plug>VimspectorRestart
+nmap <A-F6>dj <Plug>VimspectorStepOver
+nmap <A-F7>>dl <Plug>VimspectorStepInto
+nmap <A-F8>dh <Plug>VimspectorStepOut
+
+" copy pull and other when in vimdiff
+" nnoremap <c-o> <Esc>:do<CR>
+" nnoremap <c-p> <Esc>:dp<CR>
+"
+" nmap <Leader>m <Plug>MarkSet
+" nmap <Leader>gm <Plug>MarkPartialWord
+xmap <Leader>m <Plug>MarkSet
+" nmap <Leader>r <Plug>MarkRegex
+" \m\nxmap <Leader>r <Plug>MarkRegex
+nmap <Leader>n <Plug>MarkClear
+" nmap <Leader>* <Plug>MarkSearchCurrentNext
+" nmap <Leader># <Plug>MarkSearchCurrentPrev
+" nmap <Leader>/ <Plug>MarkSearchAnyNext
+" nmap <Leader>? <Plug>MarkSearchAnyPrev
+" nmap * <Plug>MarkSearchNext
+" nmap # <Plug>MarkSearchPrev

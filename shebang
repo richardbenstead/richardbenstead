@@ -1,11 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 {
     read -r skip
     read -r line
-    while [ "${line:0:2}" == '#!' ]; do
-        cmd="${cmd}${line:2}
-"
+    while [ "${line:0:2}" == "#!" ]; do
+        cmd="${cmd}${line:2} "
         read -r line
     done
 } < "$1"
-exec /bin/sh -c "$cmd" "$@"
+
+echo "$cmd $@"
+eval "$cmd $@"
