@@ -10,6 +10,7 @@ Plug 'neovim/pynvim'
 Plug 'ycm-core/YouCompleteMe'
 Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-dispatch'
+Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-commentary'
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
@@ -201,8 +202,11 @@ hi IncSearch    cterm=NONE ctermfg=yellow ctermbg=darkgreen
 " hi Search       cterm=NONE ctermfg=white ctermbg=darkgrey
 hi Search       ctermbg=DarkYellow ctermfg=White
 
-hi CursorLine   cterm=NONE ctermbg=52 ctermfg=NONE guibg=NONE guifg=NONE  
+
 set cursorline
+set cursorcolumn
+highlight CursorLine guibg=DarkRed
+highlight CursorColumn guibg=DarkRed
 
 function! SendCurrentLineToGPT(gpt)
     let current_line = getline('.')
