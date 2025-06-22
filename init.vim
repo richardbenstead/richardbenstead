@@ -11,6 +11,7 @@ Plug 'ycm-core/YouCompleteMe'
 Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-dispatch'
 Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-commentary'
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 Plug 'chrisbra/csv.vim'
 Plug 'jalvesaq/southernlights'
