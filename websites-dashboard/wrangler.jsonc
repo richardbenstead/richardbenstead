@@ -1,0 +1,23 @@
+{
+  // The websites dashboard: a Worker behind sign-in with GitHub. README.md has the setup.
+  // Deploy with "npm run deploy". The account comes from the token, or CLOUDFLARE_ACCOUNT_ID when it can see several.
+  "name": "websites-dashboard",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-24",
+  // Its address: websites-dashboard.<the account's subdomain>.workers.dev. A custom domain can be added as a route.
+  "workers_dev": true,
+  // The stylesheet, the chart script and the icon, served by Cloudflare without running the Worker.
+  "assets": { "directory": "./public" },
+  "vars": {
+    // The GitHub account ids allowed in, separated by commas. 52471242 is @richardbenstead.
+    "ALLOWED_GITHUB_IDS": "52471242",
+    // The repository whose sites, CI and minutes the dashboard shows.
+    "WEBSITES_REPO": "richardbenstead/websites",
+    // Actions minutes included each month: 2,000 on GitHub Free, 3,000 on Pro.
+    "ACTIONS_MINUTES_BUDGET": "2000",
+    "TIME_ZONE": "Australia/Sydney"
+  },
+  // Secrets, set with "npx wrangler secret put NAME": GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, SESSION_SECRET (sign-in);
+  // GITHUB_TOKEN, CF_API_TOKEN, GOOGLE_SERVICE_ACCOUNT, BING_API_KEY (the data). Each source works without the others.
+  "observability": { "enabled": true }
+}

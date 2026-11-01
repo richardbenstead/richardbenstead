@@ -1,0 +1,5 @@
+# Cloudflare serves these files itself, before the Worker runs; they hold no data, so they need no sign-in.
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  X-Robots-Tag: noindex, nofollow
